@@ -40,6 +40,45 @@ docker run -d -p 1521:1521 -e ORACLE_PASSWORD=oracle -v C:/Temp/oracle-home:/hos
 Die Umgebungsvariable *ORACLE_PASSWORD* setzt das Systempasswort. Da es keine Produktionsdatenbank
 ist, verwenden wir zur Vereinfachung *oracle*.
 
+### Linux (ALMA 9.5+)
+
+Installation von Docker
+```
+sudo dnf install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+Starten des Docker Service
+```
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo systemctl status docker
+```
+
+Verzeichnis für Oracle erstellen
+```
+sudo mkdir -p /opt/oracle-home
+sudo chown -R 54321:54321 /opt/oracle-home
+
+```
+Download des Docker builds
+```
+sudo docker run -d -p 1521:1521 \
+  -e ORACLE_PASSWORD=oracle \
+  -v /opt/oracle-home:/opt/oracle/oradata \
+  --name oracle21c \
+  gvenzl/oracle-xe:21-full
+```
+Prüfen, ob der Docker Container aktiv ist
+```
+sudo docker ps
+```
+Sollte der Container nicht aktiv sein, befinden sich die Log-Dateien hier
+```
+sudo docker logs oracle21c
+```
+
 ### MacOS (x86 Geräte)
 
 Installiere Docker Desktop von [www.docker.com](https://www.docker.com/products/docker-desktop/).
@@ -58,6 +97,8 @@ auf den Namen des Containers in Docker Desktop, um das Log anzusehen. Am Anfang 
 initialisiert. Sie ist erst betriebsbereit, wenn die Meldung *DATABASE IS READY TO USE* erscheint.
 
 ### MacOS (M1, M2 Geräte)
+
+Achtung: Funktioniert nicht mit M3-Geräten!
 
 Installiere Docker Desktop von [www.docker.com](https://www.docker.com/products/docker-desktop/).
 Achte auf die *Apple Chip* Version. Danach installiere - wenn nicht schon
