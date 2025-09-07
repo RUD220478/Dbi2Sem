@@ -96,36 +96,32 @@ abgeschlossen wurde. Das ist daran zu erkennen, dass der Prompt wieder erscheint
 auf den Namen des Containers in Docker Desktop, um das Log anzusehen. Am Anfang wird die Datenbank
 initialisiert. Sie ist erst betriebsbereit, wenn die Meldung *DATABASE IS READY TO USE* erscheint.
 
-### MacOS (M1, M2 Geräte)
-
-Achtung: Funktioniert nicht mit M3-Geräten!
+### MacOS (M3 Geräte)
 
 Installiere Docker Desktop von [www.docker.com](https://www.docker.com/products/docker-desktop/).
 Achte auf die *Apple Chip* Version. Danach installiere - wenn nicht schon
-geschehen - [Homebrew](https://brew.sh/), einen Packagemanager für macOS.
-Führe danach im Terminal die folgenden Befehle aus.
+geschehen.
 
 ```bash
-brew install colima
-colima start --memory 4 --arch x86_64
-mkdir $HOME/oracle-home
-chmod 777 $HOME/oracle-home
-docker run -d -p 1521:1521 -e ORACLE_PASSWORD=oracle -v $HOME/oracle-home:/host --name oracle21c gvenzl/oracle-xe:21-full
-docker logs -f oracle21c
+docker run -d \
+  -p 1521:1521 \
+  -e ORACLE_PASSWORD=oracle \
+  -v $HOME/oracle-home:/opt/oracle/oradata \
+  --name oracle23c \
+  gvenzl/oracle-free
+docker logs -f oracle23c
 ```
 
 Der letzte Befehl zeigt das Log des Containers an. Da beim ersten Starten des Containers die Datenbank
 noch initialisiert wird, ist es wichtig, diese Initialisierung abzuwarten. Warte, bis
-*DATABASE IS READY TO USE* erscheint. Danach kannst du mit CtrL+C (⌃ + C) das Log verlassen.
+*Completed: ALTER DATABASE OPEN* erscheint. Danach kannst du mit CtrL+C (⌃ + C) das Log verlassen.
 
-*Colima* kann x86 Container auf der Apple ARM Plattform emulieren. Daher muss zum Starten des
-Containers der Oracle Container mit folgenden Befehlen im Terminal gestartet werden:
-
-```bash
-colima start && docker start oracle21c
-```
-
-Um die Ressourcen wieder freizugeben, solltest du nach der Arbeit colima mit `colima stop` beenden.
+## Verbindungseinstellungen im SQL-Client
+Benutzername: SYSTEM
+Passwort: oracle
+hostname: localhost
+Port: 1521
+Servicename: FREEPDB1
 
 ## Starten und Stoppen des Containers
 
@@ -138,6 +134,11 @@ des Containers wichtig:
 ```text
 docker start oracle21c
 docker stop oracle21c
+
+bzw.
+
+docker start oracle23c
+docker stop oracle23c
 ```
 
 Natürlich kann mit Docker Desktop der Container ebenfalls gestartet und beendet werden.
